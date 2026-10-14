@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Code Steps</title>
+<meta name="theme-color" content="#14222F">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Code Steps">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+html{-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px)}
+body{margin:0}
+
+/* Layout: one narrow phone-first column; lessons as a numbered path; a fixed answer dock at the bottom. Code blocks look like keycaps you tap into place. */
+:root{
+  --bg:#EAF0F5; --surface:#FFFFFF; --ink:#13202D; --muted:#56687A; --line:#CCD7E1;
+  --accent:#2F5BD8; --accent-ink:#FFFFFF; --gold:#E9A800;
+  --good:#17824F; --good-soft:#DDF3E7; --bad:#C23B2C; --bad-soft:#FBE3DF;
+  --code-bg:#14222F; --code-fg:#E3ECF4; --code-kw:#8FB0FF; --code-bi:#FFCF4D; --code-str:#7FD8A6; --code-num:#FF9E80;
+  --f-display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-code:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E151C; --surface:#18232E; --ink:#E5EDF4; --muted:#93A5B6; --line:#2C3B49;
+  --accent:#6F8FFF; --accent-ink:#0B1220; --gold:#F5C542;
+  --good:#45C783; --good-soft:#143326; --bad:#F2705F; --bad-soft:#3A1C18;
+  --code-bg:#09111A; --code-fg:#E3ECF4; --code-kw:#9DB8FF; --code-bi:#FFD666; --code-str:#86E0AE; --code-num:#FFAA8C;
+  color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#0E151C; --surface:#18232E; --ink:#E5EDF4; --muted:#93A5B6; --line:#2C3B49;
+  --accent:#6F8FFF; --accent-ink:#0B1220; --gold:#F5C542;
+  --good:#45C783; --good-soft:#143326; --bad:#F2705F; --bad-soft:#3A1C18;
+  --code-bg:#09111A; --code-fg:#E3ECF4; --code-kw:#9DB8FF; --code-bi:#FFD666; --code-str:#86E0AE; --code-num:#FFAA8C;
+  color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5}
+#app{max-width:560px;margin:0 auto;padding-inline:16px;padding-block:20px 140px}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2{font-family:var(--f-display);text-wrap:balance;margin:0}
+
+/* Home */
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-weight:800;font-size:1.5rem;letter-spacing:-.01em}
+.logo{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:var(--code-bg);color:var(--code-bi);font-family:var(--f-code);font-size:.95rem}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-block:20px 28px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px}
+.stat b{display:block;font-family:var(--f-display);font-size:1.6rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat small{color:var(--muted);font-size:.8rem;text-transform:uppercase;letter-spacing:.06em}
+.stat.streak b{color:var(--gold)}
+.eyebrow{font-family:var(--f-body);font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:12px}
+.path{list-style:none;margin:0;padding:0;display:grid;gap:12px;position:relative}
+.path::before{content:"";position:absolute;left:31px;top:24px;bottom:24px;width:3px;background:var(--line);border-radius:2px}
+.node{position:relative;width:100%;display:flex;align-items:center;gap:14px;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-bottom-width:4px;border-radius:14px;padding:12px 14px 12px 10px}
+.node:active:not(:disabled){transform:translateY(2px);border-bottom-width:2px}
+.num{flex:none;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--bg);border:3px solid var(--line);font-family:var(--f-display);font-weight:800;font-size:1.1rem}
+.node.next .num{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.node.done .num{background:var(--good);border-color:var(--good);color:#fff}
+.txt{flex:1;min-width:0}
+.txt b{display:block;font-family:var(--f-display);font-size:1.15rem}
+.txt small{color:var(--muted);font-size:.9rem}
+.tag{flex:none;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.node.next .tag{color:var(--accent)}
+.node.done .tag{color:var(--good)}
+.node:disabled{opacity:.55;cursor:default}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:4px;background:var(--line);padding:4px;border-radius:12px;margin-top:18px}
+.seg button{border:none;background:none;border-radius:9px;padding:10px;font-weight:700;color:var(--muted)}
+.seg button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.15)}
+.reset{margin-top:32px;background:none;border:none;color:var(--muted);font-size:.9rem;text-decoration:underline;padding:8px 0}
+.reset.armed{color:var(--bad);font-weight:700}
+
+/* Lesson */
+.lbar{display:flex;align-items:center;gap:12px;margin-bottom:24px}
+.x{flex:none;width:44px;height:44px;border-radius:50%;border:none;background:none;font-size:1.8rem;line-height:1;color:var(--muted)}
+.prog{flex:1;height:14px;border-radius:8px;background:var(--line);overflow:hidden}
+.prog i{display:block;height:100%;background:var(--good);border-radius:8px;transition:width .4s ease}
+.kind{font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--accent);margin:0 0 6px}
+.q{font-size:1.45rem;line-height:1.25;margin-bottom:18px}
+pre.code{margin:0 0 20px;background:var(--code-bg);color:var(--code-fg);border-radius:12px;padding:16px;font-family:var(--f-code);font-size:1rem;line-height:1.7;overflow-x:auto;white-space:pre}
+.tk{color:var(--code-kw);font-weight:700}.tb{color:var(--code-bi)}.ts{color:var(--code-str)}.tn{color:var(--code-num)}
+.blank{display:inline-block;min-width:4.5ch;padding:0 8px;margin:2px 0;border:none;border-bottom:3px dashed var(--code-bi);border-radius:6px 6px 0 0;background:rgba(255,255,255,.08);font-family:var(--f-code);font-size:1rem;line-height:1.6;color:var(--code-bi);vertical-align:baseline}
+.blank.filled{border-bottom-style:solid;background:rgba(255,207,77,.18)}
+.opts{display:grid;gap:10px}
+.tile{display:block;width:100%;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-bottom-width:4px;border-radius:12px;padding:13px 14px;min-height:52px;font-size:1.05rem}
+.tile:active{transform:translateY(2px);border-bottom-width:2px}
+.tile.mono,.chip,.line{font-family:var(--f-code);font-size:1rem}
+.tile.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.bank{display:flex;flex-wrap:wrap;gap:10px}
+.chip{background:var(--surface);border:1.5px solid var(--line);border-bottom-width:4px;border-radius:10px;padding:10px 16px;min-height:48px}
+.chip:active{transform:translateY(2px);border-bottom-width:2px}
+.chip.used,.line.used{visibility:hidden}
+.tray{min-height:120px;border:2px dashed var(--line);border-radius:14px;padding:10px;display:grid;gap:8px;align-content:start;margin-bottom:18px}
+.tray .hint{color:var(--muted);text-align:center;align-self:center;margin:28px 0;font-size:.95rem}
+.pool{display:grid;gap:8px}
+.line{width:100%;text-align:left;white-space:pre;overflow-x:auto;background:var(--surface);border:1.5px solid var(--line);border-bottom-width:4px;border-radius:10px;padding:11px 12px;min-height:48px}
+.line:active{transform:translateY(2px);border-bottom-width:2px}
+.tray .line{border-color:var(--accent)}
+.locked .tile,.locked .chip,.locked .line,.locked .blank{pointer-events:none}
+
+/* Dock */
+.dock{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px))}
+.dock.ok{background:var(--good-soft);border-top-color:var(--good)}
+.dock.no{background:var(--bad-soft);border-top-color:var(--bad)}
+.dock-in{max-width:528px;margin:0 auto;display:grid;gap:12px}
+.verdict{font-family:var(--f-display);font-weight:800;font-size:1.25rem}
+.ok .verdict{color:var(--good)} .no .verdict{color:var(--bad)}
+.why{margin:-6px 0 0;font-size:.98rem}
+.btn{width:100%;border:none;border-radius:14px;padding:15px;font-weight:700;font-size:1.05rem;background:var(--accent);color:var(--accent-ink);box-shadow:inset 0 -4px 0 rgba(0,0,0,.2)}
+.btn:active:not(:disabled){transform:translateY(2px);box-shadow:inset 0 -2px 0 rgba(0,0,0,.2)}
+.btn:disabled{background:var(--line);color:var(--muted);box-shadow:none;cursor:default}
+.ok .btn{background:var(--good);color:#fff} .no .btn{background:var(--bad);color:#fff}
+.btn.ghost{background:none;color:var(--accent);box-shadow:none;border:1.5px solid var(--line)}
+
+/* Finish */
+.finish{text-align:center;padding-top:40px}
+.finish .big{font-family:var(--f-code);font-size:3rem;color:var(--gold);margin-bottom:8px}
+.finish h1{font-size:2rem;margin-bottom:8px}
+.finish p{color:var(--muted);margin:0 0 24px}
+.finish .stats{text-align:left}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+.topline{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.gear{width:44px;height:44px;border-radius:12px;border:1.5px solid var(--line);background:var(--surface);font-size:1.3rem;color:var(--muted)}
+.syncline{display:block;width:100%;text-align:left;margin-top:14px;padding:8px 12px;border-radius:10px;border:none;background:var(--surface);color:var(--muted);font-size:.88rem}
+.syncline.good{color:var(--good)} .syncline.bad{color:var(--bad);background:var(--bad-soft)} .syncline.off{color:var(--muted)}
+.syncline.static{margin-top:14px}
+.back{border:none;background:none;color:var(--accent);font-weight:700;font-size:1rem;padding:10px 0}
+.title{font-size:1.8rem;margin:8px 0 18px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-bottom:16px}
+.panel h2{font-size:1.15rem;margin-bottom:6px}
+.panel p{margin:0 0 12px;color:var(--muted)}
+.panel label{display:block;font-weight:700;font-size:.9rem;margin-bottom:6px}
+.panel input{width:100%;font:inherit;font-size:.95rem;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:12px}
+.panel input:focus{outline:3px solid var(--accent);outline-offset:1px}
+.panel .btn{margin-top:12px}
+.panel .syncline{background:var(--bg)}
+.note{font-size:.9rem}
+.linkbtn{border:none;background:none;color:var(--muted);text-decoration:underline;padding:8px 0;font-size:.9rem}
+.panel .reset{margin-top:0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const DEFAULT_COURSES = {"js": {"name": "JavaScript", "kw": "let|const|var|if|else|for|of|in|while|function|return|true|false|new", "bi": "console|log", "lessons": [{"id": "out", "title": "Say hello", "blurb": "Show text with console.log", "ex": [{"t": "mc", "q": "What does this code show?", "code": "console.log(\"Hi there\");", "opts": ["Hi there", "\"Hi there\"", "console Hi there"], "a": 0, "why": "console.log shows the text inside the quotes, without the quotes."}, {"t": "fill", "q": "Make the program show Hello.", "code": "console.[_](\"Hello\");", "bank": ["print", "log", "say"], "ans": ["log"], "why": "console.log is how JavaScript writes output."}, {"t": "order", "q": "Put the lines in order so it shows 1, then 2, then 3.", "lines": ["console.log(1);", "console.log(2);", "console.log(3);"], "why": "JavaScript runs your code from the top line down."}, {"t": "mc", "q": "Which line has a mistake?", "opts": ["console.log(\"ok\");", "console.log(\"ok);", "console.log('ok');"], "a": 1, "mono": true, "why": "Every opening quote needs a matching closing quote."}]}, {"id": "vars", "title": "Variables", "blurb": "Store values with let and const", "ex": [{"t": "mc", "q": "What is shown?", "code": "let age = 12;\nconsole.log(age);", "opts": ["age", "12", "let age = 12"], "a": 1, "why": "Without quotes, age is a variable, so you see the value stored in it."}, {"t": "fill", "q": "Create a variable called name that holds \"Sam\".", "code": "[_] name = \"Sam\";", "bank": ["make", "let", "set"], "ans": ["let"], "why": "let creates a variable you can change later."}, {"t": "order", "q": "Arrange the code so it shows 15.", "lines": ["let a = 10;", "let b = 5;", "console.log(a + b);"], "why": "A variable has to exist before you can use it."}, {"t": "mc", "q": "What happens when this runs?", "code": "const pi = 3.14;\npi = 3;", "opts": ["pi becomes 3", "You get an error", "Nothing happens"], "a": 1, "why": "const means the value can never be changed. Use let for values that change."}]}, {"id": "if", "title": "Decisions", "blurb": "Choose with if and else", "ex": [{"t": "mc", "q": "What is shown?", "code": "let x = 8;\nif (x > 5) {\n  console.log(\"big\");\n} else {\n  console.log(\"small\");\n}", "opts": ["big", "small", "big small"], "a": 0, "why": "8 is greater than 5, so only the if part runs."}, {"t": "fill", "q": "Check whether pet is equal to \"cat\".", "code": "if (pet [_] \"cat\") {\n  console.log(\"Meow\");\n}", "bank": ["=", "===", "=>"], "ans": ["==="], "why": "=== compares two values. A single = stores a value."}, {"t": "order", "q": "Build a program that shows \"Even\" for the number 4.", "lines": ["let n = 4;", "if (n % 2 === 0) {", "  console.log(\"Even\");", "}"], "why": "The condition goes in ( ), and the code it controls goes inside { }."}, {"t": "mc", "q": "What do the curly braces { } after an if do?", "opts": ["Hold the code that runs when the condition is true", "Make a comment", "End the program"], "a": 0, "why": "Braces group the lines that belong to the if."}]}, {"id": "loops", "title": "Loops", "blurb": "Repeat with for", "ex": [{"t": "mc", "q": "How many times does this show \"Go\"?", "code": "for (let i = 0; i < 3; i++) {\n  console.log(\"Go\");\n}", "opts": ["2", "3", "4"], "a": 1, "mono": true, "why": "i goes 0, 1, 2, then stops because 3 < 3 is false. That is three times."}, {"t": "fill", "q": "Count from 0 up to 2.", "code": "for (let i = 0; i [_] 3; i[_]) {\n  console.log(i);\n}", "bank": [">", "++", "<", "--"], "ans": ["<", "++"], "why": "Keep going while i < 3, and add 1 each time with i++."}, {"t": "order", "q": "Arrange the code so it adds 1 + 2 + 3 and shows 6.", "lines": ["let total = 0;", "for (const n of [1, 2, 3]) {", "  total = total + n;", "}", "console.log(total);"], "why": "Set the total before the loop, add inside it, show it after."}, {"t": "mc", "q": "What does i++ do?", "opts": ["Adds 1 to i", "Doubles i", "Sets i to 0"], "a": 0, "why": "++ is a shortcut for i = i + 1."}]}, {"id": "func", "title": "Functions", "blurb": "Reuse code with function", "ex": [{"t": "fill", "q": "Start a function definition.", "code": "[_] greet() {\n  console.log(\"Hi!\");\n}", "bank": ["def", "function", "func"], "ans": ["function"], "why": "The function keyword creates a function."}, {"t": "mc", "q": "What is shown?", "code": "function double(n) {\n  return n * 2;\n}\nconsole.log(double(4));", "opts": ["4", "8", "n * 2"], "a": 1, "why": "return sends 4 × 2 back, and console.log shows the 8."}, {"t": "order", "q": "Define a function, then call it so it shows \"Ready\".", "lines": ["function start() {", "  console.log(\"Ready\");", "}", "start();"], "why": "Write the function, then call it by name with ( )."}, {"t": "fill", "q": "Send the answer back from the function.", "code": "function add(a, b) {\n  [_] a + b;\n}", "bank": ["print", "give", "return"], "ans": ["return"], "why": "return hands a value back to the code that called the function."}]}]}, "cs": {"name": "C#", "kw": "int|string|bool|double|void|static|if|else|for|foreach|in|while|return|true|false|new", "bi": "Console|WriteLine", "lessons": [{"id": "out", "title": "Say hello", "blurb": "Show text with Console.WriteLine", "ex": [{"t": "mc", "q": "What does this code show?", "code": "Console.WriteLine(\"Hi there\");", "opts": ["Hi there", "\"Hi there\"", "Console Hi there"], "a": 0, "why": "WriteLine shows the text inside the quotes, without the quotes."}, {"t": "fill", "q": "Make the program show Hello.", "code": "Console.[_](\"Hello\");", "bank": ["Print", "Say", "WriteLine"], "ans": ["WriteLine"], "why": "Console.WriteLine writes a line of text. C# is case-sensitive, so the capitals matter."}, {"t": "order", "q": "Put the lines in order so it shows 1, then 2, then 3.", "lines": ["Console.WriteLine(1);", "Console.WriteLine(2);", "Console.WriteLine(3);"], "why": "C# runs the lines from top to bottom."}, {"t": "mc", "q": "Which line has a mistake?", "opts": ["Console.WriteLine(\"ok\");", "Console.WriteLine(\"ok\")", "Console.WriteLine(\"hi\");"], "a": 1, "mono": true, "why": "In C#, every statement must end with a semicolon ;"}]}, {"id": "vars", "title": "Variables", "blurb": "Store values with types", "ex": [{"t": "mc", "q": "What is shown?", "code": "int age = 12;\nConsole.WriteLine(age);", "opts": ["age", "12", "int age"], "a": 1, "why": "Without quotes, age is a variable, so you see the value stored in it."}, {"t": "fill", "q": "Create a variable that holds the text \"Sam\".", "code": "[_] name = \"Sam\";", "bank": ["int", "string", "bool"], "ans": ["string"], "why": "Text goes in a string. Whole numbers go in an int."}, {"t": "order", "q": "Arrange the code so it shows 15.", "lines": ["int a = 10;", "int b = 5;", "Console.WriteLine(a + b);"], "why": "A variable has to be declared before you use it."}, {"t": "mc", "q": "Which type stores true or false?", "opts": ["int", "string", "bool"], "a": 2, "mono": true, "why": "bool is short for Boolean, a value that is either true or false."}]}, {"id": "if", "title": "Decisions", "blurb": "Choose with if and else", "ex": [{"t": "mc", "q": "What is shown?", "code": "int x = 8;\nif (x > 5) {\n    Console.WriteLine(\"big\");\n} else {\n    Console.WriteLine(\"small\");\n}", "opts": ["big", "small", "big small"], "a": 0, "why": "8 is greater than 5, so only the if part runs."}, {"t": "fill", "q": "Check whether pet is equal to \"cat\".", "code": "if (pet [_] \"cat\") {\n    Console.WriteLine(\"Meow\");\n}", "bank": ["=", "==", "==="], "ans": ["=="], "why": "C# compares with ==. A single = stores a value."}, {"t": "order", "q": "Build a program that shows \"Even\" for the number 4.", "lines": ["int n = 4;", "if (n % 2 == 0) {", "    Console.WriteLine(\"Even\");", "}"], "why": "The condition goes in ( ), and the code it controls goes inside { }."}, {"t": "mc", "q": "When does the else part run?", "opts": ["Always", "When the if condition is false", "Before the if"], "a": 1, "why": "else is the backup plan. It runs only when the condition is false."}]}, {"id": "loops", "title": "Loops", "blurb": "Repeat with for and foreach", "ex": [{"t": "mc", "q": "How many times does this show \"Go\"?", "code": "for (int i = 0; i < 3; i++) {\n    Console.WriteLine(\"Go\");\n}", "opts": ["2", "3", "4"], "a": 1, "mono": true, "why": "i goes 0, 1, 2, then stops because 3 < 3 is false. That is three times."}, {"t": "fill", "q": "Go through every fruit in the list.", "code": "string[] fruits = { \"apple\", \"kiwi\" };\nforeach (string f [_] fruits) {\n    Console.WriteLine(f);\n}", "bank": ["of", "in", "at"], "ans": ["in"], "why": "The pattern is: foreach (type item in collection)."}, {"t": "order", "q": "Arrange the code so it adds 1 + 2 + 3 and shows 6.", "lines": ["int total = 0;", "for (int i = 1; i <= 3; i++) {", "    total = total + i;", "}", "Console.WriteLine(total);"], "why": "Set the total before the loop, add inside it, show it after."}, {"t": "mc", "q": "What does i++ do?", "opts": ["Adds 1 to i", "Doubles i", "Sets i to 0"], "a": 0, "why": "++ is a shortcut for i = i + 1."}]}, {"id": "func", "title": "Methods", "blurb": "Reuse code with methods", "ex": [{"t": "fill", "q": "This method only shows text and gives nothing back. Pick its return type.", "code": "static [_] Greet() {\n    Console.WriteLine(\"Hi!\");\n}", "bank": ["int", "void", "string"], "ans": ["void"], "why": "void means the method does not return a value."}, {"t": "mc", "q": "What is shown?", "code": "static int Double(int n) {\n    return n * 2;\n}\nConsole.WriteLine(Double(4));", "opts": ["4", "8", "n * 2"], "a": 1, "why": "return sends 4 × 2 back, and WriteLine shows the 8."}, {"t": "order", "q": "Define a method, then call it so it shows \"Ready\".", "lines": ["static void Start() {", "    Console.WriteLine(\"Ready\");", "}", "Start();"], "why": "Write the method, then call it by name with ( )."}, {"t": "fill", "q": "This method adds two whole numbers. Pick its return type.", "code": "static [_] Add(int a, int b) {\n    return a + b;\n}", "bank": ["void", "string", "int"], "ans": ["int"], "why": "Adding two ints gives an int, so the method returns int."}]}]}};
+
+// ---------- storage ----------
+const store = {
+  get(k){ try { return JSON.parse(localStorage.getItem(k)); } catch(e){ return null; } },
+  set(k,v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
+};
+const KEY='code-steps-v1', LKEY='code-steps-lessons', YKEY='code-steps-sync';
+const words = x => Array.isArray(x) ? x : String(x||'').split(/[|\s]+/).filter(Boolean);
+
+const saved = store.get(LKEY);
+let COURSES = (saved && saved.courses && Object.keys(saved.courses).length) ? saved.courses : DEFAULT_COURSES;
+let waitingCourses = null; // new lessons that arrive mid-lesson are applied afterwards
+
+let sync = Object.assign({url:'', updated:null, state:'', error:'', problems:0, device:'', pending:false}, store.get(YKEY)||{});
+if (!sync.device) sync.device = 'phone-' + Math.random().toString(36).slice(2,8);
+const saveSync = () => store.set(YKEY, sync);
+saveSync();
+
+const fresh = () => ({course:Object.keys(COURSES)[0], done:{}, xp:0, streak:0, last:null});
+function load(){ const v=store.get(KEY); if (v && v.done) { if(!COURSES[v.course]) v.course=Object.keys(COURSES)[0]; return v; } return fresh(); }
+function save(){ store.set(KEY, S); }
+let S=load(), L=null, view='home', resetArm=false, lastResult=null;
+const app=document.getElementById('app');
+
+// ---------- helpers ----------
+const day=t=>new Date(t).toLocaleDateString('en-CA');
+function liveStreak(){ const t=day(Date.now()), y=day(Date.now()-864e5); return (S.last===t||S.last===y)?S.streak:0; }
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const reEsc=s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+const C=()=>COURSES[S.course], COURSE_L=()=>C().lessons, dk=l=>S.course+':'+l.id;
+const reCache={};
+function hlRe(){
+  const k=S.course; if(reCache[k]) return reCache[k];
+  const kw=words(C().kw).map(reEsc).join('|')||'(?!)', bi=words(C().bi).map(reEsc).join('|')||'(?!)';
+  return reCache[k]=new RegExp(`("[^"\\n]*"?|'[^'\\n]*'?)|\\b(${kw})\\b|\\b(${bi})\\b|(\\b\\d+(?:\\.\\d+)?\\b)`,'g');
+}
+function hl(s){ const RE=hlRe(); RE.lastIndex=0; let out='',last=0,m;
+  while((m=RE.exec(s))){ if(!m[0]){RE.lastIndex++;continue} out+=esc(s.slice(last,m.index)); const c=m[1]?'ts':m[2]?'tk':m[3]?'tb':'tn'; out+=`<span class="${c}">${esc(m[0])}</span>`; last=RE.lastIndex; }
+  return out+esc(s.slice(last)); }
+function shuffle(a){ a=a.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a; }
+const unlocked=i=>i===0||!!S.done[dk(COURSE_L()[i-1])];
+function ago(t){ if(!t) return ''; const m=Math.round((Date.now()-t)/60000);
+  if(m<1) return 'just now'; if(m<60) return m+' min ago'; const h=Math.round(m/60); if(h<24) return h+' hr ago';
+  return new Date(t).toLocaleDateString(); }
+
+// ---------- sync with the Apps Script sidekick ----------
+function syncLine(){
+  if(!sync.url) return {cls:'', text:'Not connected to your Sheet yet. Using the built-in lessons.'};
+  if(sync.state==='syncing') return {cls:'', text:'Checking your Sheet for new lessons…'};
+  if(!navigator.onLine) return {cls:'off', text:'Offline. Using saved lessons'+(sync.updated?' from '+ago(sync.updated):'')+'.'};
+  if(sync.state==='error') return {cls:'bad', text:"Couldn't reach your Sheet ("+sync.error+"). Using saved lessons."};
+  return {cls:'good', text:'Lessons up to date · synced '+ago(sync.updated)};
+}
+function applyCourses(c){
+  COURSES=c; for(const k in reCache) delete reCache[k];
+  if(!COURSES[S.course]) { S.course=Object.keys(COURSES)[0]; save(); }
+}
+async function pullLessons(){
+  if(!sync.url || !navigator.onLine) { refresh(); return; }
+  sync.state='syncing'; refresh();
+  try{
+    const r=await fetch(sync.url+(sync.url.includes('?')?'&':'?')+'api=lessons',{cache:'no-store'});
+    const d=await r.json();
+    if(!d.ok) throw new Error(d.error||'no lessons');
+    if(!d.courses || !Object.keys(d.courses).length) throw new Error('the Sheet has no valid lessons');
+    store.set(LKEY,{courses:d.courses, updated:d.updated});
+    if(view==='lesson') waitingCourses=d.courses; else applyCourses(d.courses);
+    sync.updated=Date.now(); sync.state='ok'; sync.error=''; sync.problems=(d.problems||[]).length;
+  }catch(e){
+    sync.state='error'; sync.error=e.message.includes('JSON')||e.message.includes('fetch')?'check the link':e.message;
+  }
+  saveSync(); refresh();
+  pushProgress();
+}
+async function pushProgress(){
+  if(!sync.url) return;
+  if(!navigator.onLine){ sync.pending=true; saveSync(); return; }
+  try{
+    await fetch(sync.url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify({action:'progress',device:sync.device,xp:S.xp,streak:liveStreak(),last:S.last,done:Object.keys(S.done)})});
+    sync.pending=false;
+  }catch(e){ sync.pending=true; }
+  saveSync();
+}
+function refresh(){ if(view==='home'||view==='settings') render(); }
+window.addEventListener('online', pullLessons);
+window.addEventListener('offline', refresh);
+
+// ---------- screens ----------
+function statsHTML(){
+  const n=COURSE_L().filter(l=>S.done[dk(l)]).length;
+  return `<section class="stats">
+   <div class="stat streak"><b>${liveStreak()}</b><small>Day streak</small></div>
+   <div class="stat"><b>${S.xp}</b><small>XP</small></div>
+   <div class="stat"><b>${n}/${COURSE_L().length}</b><small>Lessons</small></div></section>`;
+}
+
+function home(){
+  let nextFound=false;
+  const items=COURSE_L().map((l,i)=>{
+    const done=!!S.done[dk(l)], open=unlocked(i);
+    let cls='',tag='Locked';
+    if(done){cls='done';tag='Redo'}else if(open&&!nextFound){cls='next';tag='Start';nextFound=true}
+    return `<li><button class="node ${cls}" data-act="open" data-i="${i}" ${open?'':'disabled'}>
+      <span class="num">${done?'✓':i+1}</span>
+      <span class="txt"><b>${esc(l.title)}</b><small>${esc(l.blurb)} · ${l.ex.length} exercises</small></span>
+      <span class="tag">${tag}</span></button></li>`;
+  }).join('');
+  const s=syncLine();
+  app.innerHTML=`<header class="topline"><div class="brand"><span class="logo">&gt;_</span>Code Steps</div>
+     <button class="gear" data-act="settings" aria-label="Settings">⚙</button></header>
+   <button class="syncline ${s.cls}" data-act="settings">${esc(s.text)}</button>
+   <div class="seg" role="tablist">${Object.entries(COURSES).map(([k,c])=>`<button role="tab" aria-selected="${S.course===k}" data-act="course" data-c="${esc(k)}">${esc(c.name)}</button>`).join('')}</div>
+   ${statsHTML()}
+   <h2 class="eyebrow">${esc(C().name)} · tap, don't type</h2>
+   <ol class="path">${items}</ol>`;
+}
+
+function settings(){
+  const s=syncLine();
+  app.innerHTML=`<header class="topline"><button class="back" data-act="home">‹ Lessons</button></header>
+   <h1 class="title">Settings</h1>
+   <section class="panel">
+     <h2>Lesson sync</h2>
+     <p>Paste the web app link from your Apps Script deployment. The app downloads your lessons whenever you're online and keeps them for offline use.</p>
+     <label for="syncUrl">Apps Script web app link</label>
+     <input id="syncUrl" type="url" inputmode="url" autocomplete="off" placeholder="https://script.google.com/macros/s/…/exec" value="${esc(sync.url)}">
+     <button class="btn" data-act="saveurl">Save and sync now</button>
+     <p class="syncline static ${s.cls}">${esc(s.text)}</p>
+     ${sync.problems?`<p class="note">${sync.problems} row(s) in your Sheet have mistakes and were skipped. The editor page lists them.</p>`:''}
+     ${sync.url?`<button class="linkbtn" data-act="clearurl">Disconnect and use built-in lessons</button>`:''}
+   </section>
+   <section class="panel">
+     <h2>This device</h2>
+     <p>Shows on the Progress tab of your Sheet as <b>${esc(sync.device)}</b>.</p>
+     <button class="reset ${resetArm?'armed':''}" data-act="reset">${resetArm?'Tap again to erase all progress':'Reset progress'}</button>
+   </section>`;
+}
+
+function startLesson(i){
+  const l=COURSE_L()[i];
+  L={i,queue:l.ex.map((_,k)=>k),solved:0,total:l.ex.length,missed:new Set(),bonus:0};
+  view='lesson';setupEx();render();window.scrollTo(0,0);
+}
+function cur(){ return COURSE_L()[L.i].ex[L.queue[0]]; }
+function setupEx(){
+  const e=cur(); L.sel=null; L.checked=false;
+  if(e.t==='fill'){ L.tiles=shuffle(e.bank.map((_,k)=>k)); L.fills=e.ans.map(()=>null); }
+  if(e.t==='order'){ let t,n=0; do{t=shuffle(e.lines.map((_,k)=>k))}while(n++<20&&t.every((v,k)=>e.lines[v]===e.lines[k])); L.tiles=t; L.placed=[]; }
+}
+function ready(){ const e=cur();
+  if(e.t==='mc') return L.sel!==null;
+  if(e.t==='fill') return L.fills.every(v=>v!==null);
+  return L.placed.length===e.lines.length; }
+function isRight(){ const e=cur();
+  if(e.t==='mc') return L.sel===e.a;
+  if(e.t==='fill') return L.fills.every((b,k)=>e.bank[b]===e.ans[k]);
+  return L.placed.every((v,k)=>e.lines[v]===e.lines[k]); }
+
+function lesson(){
+  const e=cur(), pct=Math.round(L.solved/L.total*100);
+  let kind, body='';
+  if(e.t==='mc'){
+    kind='Choose the answer';
+    if(e.code) body+=`<pre class="code">${hl(e.code)}</pre>`;
+    body+=`<div class="opts">${e.opts.map((o,k)=>`<button class="tile ${e.mono?'mono':''} ${L.sel===k?'sel':''}" data-act="pick" data-k="${k}">${e.mono?hl(o):esc(o)}</button>`).join('')}</div>`;
+  } else if(e.t==='fill'){
+    kind='Fill the blank';
+    const parts=e.code.split('[_]'); let html='';
+    parts.forEach((p,k)=>{ html+=hl(p); if(k<parts.length-1){ const v=L.fills[k];
+      html+=`<button class="blank ${v!==null?'filled':''}" data-act="unfill" data-k="${k}" aria-label="Blank ${k+1}">${v!==null?esc(e.bank[v]):'&nbsp;'}</button>`; } });
+    body+=`<pre class="code">${html}</pre>`;
+    body+=`<div class="bank">${L.tiles.map(b=>`<button class="chip ${L.fills.includes(b)?'used':''}" data-act="fill" data-k="${b}">${esc(e.bank[b])}</button>`).join('')}</div>`;
+  } else {
+    kind='Build the program';
+    body+=`<div class="tray">${L.placed.length?L.placed.map((v,k)=>`<button class="line" data-act="unplace" data-k="${k}">${hl(e.lines[v])}</button>`).join(''):'<p class="hint">Tap the blocks below in the right order</p>'}</div>`;
+    body+=`<div class="pool">${L.tiles.map(v=>`<button class="line ${L.placed.includes(v)?'used':''}" data-act="place" data-k="${v}">${hl(e.lines[v])}</button>`).join('')}</div>`;
+  }
+  let dock;
+  if(!L.checked){
+    dock=`<div class="dock"><div class="dock-in"><button class="btn" data-act="check" ${ready()?'':'disabled'}>Check</button></div></div>`;
+  } else {
+    const ok=lastResult;
+    dock=`<div class="dock ${ok?'ok':'no'}" role="status"><div class="dock-in">
+      <div class="verdict">${ok?'Correct!':'Not quite'}</div>
+      <p class="why">${esc(e.why)}${ok?'':' This one will come back at the end.'}</p>
+      <button class="btn" data-act="next">Continue</button></div></div>`;
+  }
+  app.innerHTML=`<div class="lbar"><button class="x" data-act="quit" aria-label="Leave lesson">×</button>
+     <div class="prog" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div></div>
+   <main class="${L.checked?'locked':''}"><p class="kind">${kind}</p><h2 class="q">${esc(e.q)}</h2>${body}</main>${dock}`;
+}
+
+function finishLesson(){
+  const l=COURSE_L()[L.i], first=!S.done[dk(l)];
+  const gained=(first?10:5)+L.bonus;
+  S.done[dk(l)]=true; S.xp+=gained;
+  const t=day(Date.now()), y=day(Date.now()-864e5);
+  if(S.last!==t){ S.streak=(S.last===y?S.streak:0)+1; S.last=t; }
+  save(); L.gained=gained; view='finish'; render(); window.scrollTo(0,0);
+  pushProgress();
+}
+function finish(){
+  const acc=Math.round((L.total-L.missed.size)/L.total*100), nxt=L.i+1<COURSE_L().length?L.i+1:null;
+  app.innerHTML=`<div class="finish"><div class="big">+${L.gained} XP</div>
+   <h1>${esc(COURSE_L()[L.i].title)} complete</h1>
+   <p>${acc}% right on the first try</p>
+   ${statsHTML()}
+   <div class="dock-in">${nxt!==null?`<button class="btn" data-act="open" data-i="${nxt}">Next lesson: ${esc(COURSE_L()[nxt].title)}</button>`:`<p>You finished the whole ${esc(C().name)} course!</p>`}
+   <button class="btn ghost" data-act="home">Back to lessons</button></div></div>`;
+}
+
+function render(){
+  if(view==='home') home(); else if(view==='settings') settings(); else if(view==='lesson') lesson(); else finish();
+}
+function goHome(){
+  view='home'; L=null;
+  if(waitingCourses){ applyCourses(waitingCourses); waitingCourses=null; }
+  render(); window.scrollTo(0,0);
+}
+
+app.addEventListener('click',ev=>{
+  const b=ev.target.closest('[data-act]'); if(!b||b.disabled) return;
+  const a=b.dataset.act, k=+b.dataset.k;
+  if(a!=='reset') resetArm=false;
+  switch(a){
+    case 'open':
+      if(waitingCourses){ applyCourses(waitingCourses); waitingCourses=null; }
+      startLesson(+b.dataset.i); return;
+    case 'home': case 'quit': goHome(); return;
+    case 'settings': view='settings'; break;
+    case 'course': S.course=b.dataset.c; save(); break;
+    case 'saveurl': {
+      const v=document.getElementById('syncUrl').value.trim();
+      if(v && !/^https:\/\/script\.google(usercontent)?\.com\//.test(v)){ sync.state='error'; sync.error='that is not an Apps Script link'; sync.url=v; saveSync(); break; }
+      sync.url=v; sync.state=''; saveSync(); pullLessons(); return; }
+    case 'clearurl': sync.url=''; sync.state=''; saveSync(); store.set(LKEY,null); applyCourses(DEFAULT_COURSES); break;
+    case 'reset': if(resetArm){ S=fresh(); save(); resetArm=false; pushProgress(); } else resetArm=true; break;
+    case 'pick': L.sel=k; break;
+    case 'fill': { const s=L.fills.indexOf(null); if(s>-1) L.fills[s]=k; break; }
+    case 'unfill': L.fills[k]=null; break;
+    case 'place': L.placed.push(k); break;
+    case 'unplace': L.placed.splice(k,1); break;
+    case 'check': { lastResult=isRight(); L.checked=true; const idx=L.queue[0];
+      if(lastResult){ if(!L.missed.has(idx)) L.bonus+=2; } else L.missed.add(idx); break; }
+    case 'next': { const idx=L.queue.shift();
+      if(lastResult) L.solved++; else L.queue.push(idx);
+      if(!L.queue.length){ finishLesson(); return; }
+      setupEx(); break; }
+  }
+  render();
+});
+
+render();
+pullLessons();
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{ navigator.serviceWorker.register('sw.js').catch(()=>{}); });
+}
+</script>
+</body>
+</html>
