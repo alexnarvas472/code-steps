@@ -1,5 +1,5 @@
 // Code Steps offline cache. Bump VERSION when you change the app files to force an update.
-const VERSION = 'code-steps-v1';
+const VERSION = 'code-steps-v2';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-180.png', './icon-192.png', './icon-512.png'];
 const FONT_HOSTS = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 
